@@ -1,0 +1,103 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <android.opengl.GLSurfaceView
+        android:id="@+id/gl_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:id="@+id/linearlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize">
+        </android.support.v7.widget.Toolbar>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/debug_text_color"
+                android:text="@string/tangoevent" />
+            <TextView
+                android:id="@+id/tangoevent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/debug_text_color"
+                android:text="@string/NA" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/debug_text_color"
+                android:text="@string/pointCount" />
+
+            <TextView
+                android:id="@+id/pointCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/debug_text_color"
+                android:text="@string/NA" />
+        </LinearLayout>
+
+         <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/debug_text_color"
+                android:text="@string/frameDelta" />
+
+            <TextView
+                android:id="@+id/frameDelta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/debug_text_color"
+                android:text="@string/NA" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="4dp">
+        <Button
+            android:id="@+id/start_accumulate_button"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:textColor="@color/button_text_color"
+            android:background="@drawable/button_selector_green_progressive"
+            android:text="@string/start" />
+        <Button
+            android:id="@+id/start_realtime_button"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:textColor="@color/button_text_color"
+            android:background="@drawable/button_selector_green_progressive"
+            android:text="@string/realtime" />
+    </LinearLayout>
+</FrameLayout>

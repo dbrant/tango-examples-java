@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/menu_save_data"
+          android:icon="@android:drawable/ic_menu_save"
+          android:title="@string/save_data"
+          app:showAsAction="never"
+          />
+
+    <item android:id="@+id/menu_first_person"
+        android:title="@string/first_person"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/menu_third_person"
+        android:title="@string/third_person"
+        app:showAsAction="never"
+        />
+
+</menu>

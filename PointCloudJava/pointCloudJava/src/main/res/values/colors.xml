@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="green_progressive">#ff42a078</color>
+    <color name="green_progressive_dark">#ff3a8761</color>
+
+    <color name="debug_text_color">#ff808080</color>
+    <color name="button_text_color">#fff0f0f0</color>
+
+    <color name="toolbar_color">#80000000</color>
+
+</resources>
