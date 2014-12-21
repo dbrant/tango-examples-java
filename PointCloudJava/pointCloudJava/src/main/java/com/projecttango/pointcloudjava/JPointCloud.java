@@ -41,6 +41,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -53,7 +56,7 @@ import android.widget.Toast;
  * Layout views. OpenGL rendering logic is delegated to the {@link PCRenderer}
  * class.
  */
-public class JPointCloud extends ActionBarActivity {
+public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Callback {
 
     private static final String TAG = JPointCloud.class.getSimpleName();
     private static int SECS_TO_MILLI = 1000;
@@ -62,6 +65,8 @@ public class JPointCloud extends ActionBarActivity {
 
     private PCRenderer mRenderer;
     private GLSurfaceView mGLView;
+
+    private Surface mSurface;
 
     private TextView mTangoEventTextView;
     private TextView mPointCountTextView;
@@ -113,10 +118,16 @@ public class JPointCloud extends ActionBarActivity {
             }
         });
 
+        SurfaceView cameraSurfaceView = (SurfaceView) findViewById(R.id.cameraView);
+        SurfaceHolder cameraSurfaceHolder = cameraSurfaceView.getHolder();
+        cameraSurfaceHolder.addCallback(this);
+
         mTango = new Tango(this);
-        mConfig = new TangoConfig();
         mConfig = mTango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT);
         mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
+        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_LEARNINGMODE, true);
+        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_MOTIONTRACKING, true);
+        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
 
         mRenderer = new PCRenderer();
         mGLView = (GLSurfaceView) findViewById(R.id.gl_surface_view);
@@ -127,12 +138,13 @@ public class JPointCloud extends ActionBarActivity {
         mIsTangoServiceConnected = false;
     }
 
-    private void showError(int resId) {
-        showError(getString(resId));
+    private void showError(int resId, Throwable e) {
+        showError(getString(resId), e);
     }
 
-    private void showError(String errorStr) {
+    private void showError(String errorStr, Throwable e) {
         Toast.makeText(getApplicationContext(), errorStr, Toast.LENGTH_SHORT).show();
+        e.printStackTrace();
     }
 
     @Override
@@ -142,7 +154,7 @@ public class JPointCloud extends ActionBarActivity {
             mTango.disconnect();
             mIsTangoServiceConnected = false;
         } catch (TangoErrorException e) {
-            showError(R.string.TangoError);
+            showError(R.string.TangoError, e);
         }
     }
 
@@ -171,17 +183,17 @@ public class JPointCloud extends ActionBarActivity {
             try {
                 setTangoListeners();
             } catch (TangoErrorException e) {
-                showError(R.string.TangoError);
+                showError(R.string.TangoError, e);
             } catch (SecurityException e) {
-                showError(R.string.motiontrackingpermission);
+                showError(R.string.motiontrackingpermission, e);
             }
             try {
                 mTango.connect(mConfig);
                 mIsTangoServiceConnected = true;
             } catch (TangoOutOfDateException e) {
-                showError(R.string.TangoOutOfDateException);
+                showError(R.string.TangoOutOfDateException, e);
             } catch (TangoErrorException e) {
-                showError(R.string.TangoError);
+                showError(R.string.TangoError, e);
             }
             SetUpExtrinsics();
         }
@@ -225,7 +237,7 @@ public class JPointCloud extends ActionBarActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                showError(e.getMessage());
+                                showError(e.getMessage(), e);
                             }
                         });
                     }
@@ -249,6 +261,28 @@ public class JPointCloud extends ActionBarActivity {
         return mRenderer.onTouchEvent(event);
     }
 
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceCreated...");
+        mSurface = holder.getSurface();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Log.d(TAG, "surfaceChanged...");
+        mSurface = holder.getSurface();
+        if (mIsTangoServiceConnected) {
+            Log.d(TAG, "reconnecting to surface...");
+            mTango.connectSurface(0, mSurface);
+        }
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceDestroyed...");
+        mTango.disconnectSurface(0);
+    }
+
     private void SetUpExtrinsics() {
         // Set device to imu matrix in Model Matrix Calculator.
         TangoPoseData device2IMUPose = new TangoPoseData();
@@ -258,7 +292,7 @@ public class JPointCloud extends ActionBarActivity {
         try {
             device2IMUPose = mTango.getPoseAtTime(0.0, framePair);
         } catch (TangoErrorException e) {
-            showError(R.string.TangoError);
+            showError(R.string.TangoError, e);
         }
         mRenderer.getModelMatCalculator().SetDevice2IMUMatrix(
                 device2IMUPose.getTranslationAsFloats(),
@@ -272,7 +306,7 @@ public class JPointCloud extends ActionBarActivity {
         try {
             color2IMUPose = mTango.getPoseAtTime(0.0, framePair);
         } catch (TangoErrorException e) {
-            showError(R.string.TangoError);
+            showError(R.string.TangoError, e);
         }
         mRenderer.getModelMatCalculator().SetColorCamera2IMUMatrix(
                 color2IMUPose.getTranslationAsFloats(),
@@ -280,6 +314,12 @@ public class JPointCloud extends ActionBarActivity {
     }
 
     private void setTangoListeners() {
+        if (mSurface.isValid()) {
+            Log.d(TAG, "connecting to surface...");
+            mTango.connectSurface(0, mSurface);
+        } else {
+            Log.e(TAG, "surface is not valid.");
+        }
         // Configure the Tango coordinate frame pair
         final ArrayList<TangoCoordinateFramePair> framePairs = new ArrayList<>();
         framePairs.add(new TangoCoordinateFramePair(
@@ -322,9 +362,9 @@ public class JPointCloud extends ActionBarActivity {
                             pointCloudPose.getRotationAsFloats());
 
                 } catch (TangoErrorException e) {
-                    showError(R.string.TangoError);
+                    showError(R.string.TangoError, e);
                 } catch (TangoInvalidException e) {
-                    showError(R.string.TangoError);
+                    showError(R.string.TangoError, e);
                 }
 
                 // Must run UI changes on the UI thread. Running in the Tango
