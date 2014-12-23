@@ -62,11 +62,15 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
     private static int SECS_TO_MILLI = 1000;
     private Tango mTango;
     private TangoConfig mConfig;
+    boolean haveMotionPermission = false;
+    boolean haveAdfPermission = false;
 
     private PCRenderer mRenderer;
     private GLSurfaceView mGLView;
 
     private Surface mSurface;
+    SurfaceView cameraSurfaceView;
+    SurfaceHolder cameraSurfaceHolder;
 
     private TextView mTangoEventTextView;
     private TextView mPointCountTextView;
@@ -118,8 +122,10 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
             }
         });
 
-        SurfaceView cameraSurfaceView = (SurfaceView) findViewById(R.id.cameraView);
-        SurfaceHolder cameraSurfaceHolder = cameraSurfaceView.getHolder();
+        cameraSurfaceView = (SurfaceView) findViewById(R.id.cameraView);
+        cameraSurfaceView.setZOrderOnTop(true);
+        cameraSurfaceView.setZOrderMediaOverlay(true);
+        cameraSurfaceHolder = cameraSurfaceView.getHolder();
         cameraSurfaceHolder.addCallback(this);
 
         mTango = new Tango(this);
@@ -165,6 +171,9 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
             startActivityForResult(
                     Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_MOTION_TRACKING),
                     Tango.TANGO_INTENT_ACTIVITYCODE);
+            startActivityForResult(
+                    Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_ADF_LOAD_SAVE),
+                    Tango.TANGO_INTENT_ACTIVITYCODE + 1);
         }
         Log.i(TAG, "onResumed");
     }
@@ -173,6 +182,11 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == Tango.TANGO_INTENT_ACTIVITYCODE) {
+            haveMotionPermission = true;
+        } else if (requestCode == Tango.TANGO_INTENT_ACTIVITYCODE + 1) {
+            haveAdfPermission = true;
+        }
+        if (haveMotionPermission && haveAdfPermission) {
             Log.i(TAG, "Triggered");
             // Make sure the request was successful
             if (resultCode == RESULT_CANCELED) {
@@ -188,6 +202,9 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
                 showError(R.string.motiontrackingpermission, e);
             }
             try {
+                if (mSurface != null && mSurface.isValid()) {
+                    mTango.connectSurface(0, mSurface);
+                }
                 mTango.connect(mConfig);
                 mIsTangoServiceConnected = true;
             } catch (TangoOutOfDateException e) {
@@ -263,18 +280,12 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        Log.d(TAG, "surfaceCreated...");
         mSurface = holder.getSurface();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Log.d(TAG, "surfaceChanged...");
         mSurface = holder.getSurface();
-        if (mIsTangoServiceConnected) {
-            Log.d(TAG, "reconnecting to surface...");
-            mTango.connectSurface(0, mSurface);
-        }
     }
 
     @Override
@@ -314,27 +325,28 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
     }
 
     private void setTangoListeners() {
-        if (mSurface.isValid()) {
-            Log.d(TAG, "connecting to surface...");
-            mTango.connectSurface(0, mSurface);
-        } else {
-            Log.e(TAG, "surface is not valid.");
-        }
         // Configure the Tango coordinate frame pair
         final ArrayList<TangoCoordinateFramePair> framePairs = new ArrayList<>();
         framePairs.add(new TangoCoordinateFramePair(
                 TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
+                TangoPoseData.COORDINATE_FRAME_DEVICE));
+        framePairs.add(new TangoCoordinateFramePair(
+                TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                 TangoPoseData.COORDINATE_FRAME_DEVICE));
         // Listen for new Tango data
         mTango.connectListener(framePairs, new OnTangoUpdateListener() {
 
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
-                mRenderer.getModelMatCalculator().updateModelMatrix(
-                        pose.getTranslationAsFloats(),
-                        pose.getRotationAsFloats());
-                mRenderer.updateViewMatrix();
-                mGLView.requestRender();
+                if (pose.baseFrame == TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE) {
+
+                } else if (pose.baseFrame == TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION) {
+                    mRenderer.getModelMatCalculator().updateModelMatrix(
+                            pose.getTranslationAsFloats(),
+                            pose.getRotationAsFloats());
+                    mRenderer.updateViewMatrix();
+                    mGLView.requestRender();
+                }
             }
 
             @Override

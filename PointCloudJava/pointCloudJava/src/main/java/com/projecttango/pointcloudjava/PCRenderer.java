@@ -58,7 +58,7 @@ public class PCRenderer extends Renderer implements GLSurfaceView.Renderer {
     public synchronized void setState(int state) {
         this.state = state;
         if (state == STATE_ACCUMULATING) {
-            pointCloud.clear();
+            // do nothing, so that points will continue to accumulate
         } else if (state == STATE_REALTIME) {
             pointCloud.clear();
         }

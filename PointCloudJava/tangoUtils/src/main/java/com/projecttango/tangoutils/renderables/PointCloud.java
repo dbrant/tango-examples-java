@@ -33,7 +33,7 @@ import android.util.Log;
 public class PointCloud extends Renderable {
     private static final String TAG = "PointCloud";
 
-    private static final int MAX_POINTS = 1000000;
+    private static final int MAX_POINTS = 2000000;
 
     private static final int COORDS_PER_VERTEX = 3;
     private static final int BYTES_PER_FLOAT = 4;
