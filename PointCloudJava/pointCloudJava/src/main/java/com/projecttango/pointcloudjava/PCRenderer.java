@@ -20,11 +20,9 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import com.projecttango.tangoutils.Renderer;
-import com.projecttango.tangoutils.renderables.CameraFrustum;
 import com.projecttango.tangoutils.renderables.CameraFrustumAndAxis;
 import com.projecttango.tangoutils.renderables.Grid;
 import com.projecttango.tangoutils.renderables.PointCloud;
-import com.projecttango.tangoutils.renderables.RenderUtils;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -38,9 +36,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Locale;
 
 public class PCRenderer extends Renderer implements GLSurfaceView.Renderer {
     private static final String TAG = "PCRenderer";
@@ -134,7 +131,7 @@ public class PCRenderer extends Renderer implements GLSurfaceView.Renderer {
             this.listener = listener;
         }
         protected String doInBackground(String... params) {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
             String fileName = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
                     + "/" + formatter.format(new Date()) + ".txt";
             Log.d(TAG, "Saving file: " + fileName);
