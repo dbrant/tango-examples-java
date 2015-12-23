@@ -26,7 +26,6 @@ import com.google.atap.tangoservice.TangoConfig;
 import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import com.google.atap.tangoservice.TangoErrorException;
 import com.google.atap.tangoservice.TangoEvent;
-import com.google.atap.tangoservice.TangoInvalidException;
 import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.atap.tangoservice.TangoXyzIjData;
@@ -67,17 +66,12 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
 
     private PCRenderer mRenderer;
     private GLSurfaceView mGLView;
-
     private Surface mSurface;
-    SurfaceView cameraSurfaceView;
-    SurfaceHolder cameraSurfaceHolder;
 
     private TextView mTangoEventTextView;
     private TextView mPointCountTextView;
     private TextView mFrequencyTextView;
-
     private Button startButton;
-    private Button realtimeButton;
 
     private float mXyIjPreviousTimeStamp;
     private float mCurrentTimeStamp;
@@ -103,7 +97,7 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
         startButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mRenderer.getState() != PCRenderer.STATE_ACCUMULATING) {
+                if (mRenderer.getState() != PCRenderer.STATE_ACCUMULATING) {
                     mRenderer.setState(PCRenderer.STATE_ACCUMULATING);
                     startButton.setText(getString(R.string.stop));
                 } else {
@@ -112,20 +106,19 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
                 }
             }
         });
-        realtimeButton = (Button) findViewById(R.id.start_realtime_button);
-        realtimeButton.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.start_realtime_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mRenderer.getState() != PCRenderer.STATE_REALTIME) {
+                if (mRenderer.getState() != PCRenderer.STATE_REALTIME) {
                     mRenderer.setState(PCRenderer.STATE_REALTIME);
                 }
             }
         });
 
-        cameraSurfaceView = (SurfaceView) findViewById(R.id.cameraView);
+        SurfaceView cameraSurfaceView = (SurfaceView) findViewById(R.id.cameraView);
         cameraSurfaceView.setZOrderOnTop(true);
         cameraSurfaceView.setZOrderMediaOverlay(true);
-        cameraSurfaceHolder = cameraSurfaceView.getHolder();
+        SurfaceHolder cameraSurfaceHolder = cameraSurfaceView.getHolder();
         cameraSurfaceHolder.addCallback(this);
 
         mTango = new Tango(this);
@@ -338,9 +331,7 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
 
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
-                if (pose.baseFrame == TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE) {
-
-                } else if (pose.baseFrame == TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION) {
+                if (pose.baseFrame == TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION) {
                     mRenderer.getModelMatCalculator().updateModelMatrix(
                             pose.getTranslationAsFloats(),
                             pose.getRotationAsFloats());
@@ -373,9 +364,7 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
                             pointCloudPose.getTranslationAsFloats(),
                             pointCloudPose.getRotationAsFloats());
 
-                } catch (TangoErrorException e) {
-                    showError(R.string.TangoError, e);
-                } catch (TangoInvalidException e) {
+                } catch (Exception e) {
                     showError(R.string.TangoError, e);
                 }
 
@@ -387,8 +376,8 @@ public class JPointCloud extends ActionBarActivity implements SurfaceHolder.Call
                     @Override
                     public void run() {
                         // Display number of points in the point cloud
-                        mPointCountTextView.setText(Integer.toString(mRenderer.getPointCount()));
-                        mFrequencyTextView.setText("" + threeDec.format(frameDelta));
+                        mPointCountTextView.setText(String.format("%1$s", mRenderer.getPointCount()));
+                        mFrequencyTextView.setText(threeDec.format(frameDelta));
                     }
                 });
             }

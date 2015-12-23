@@ -16,18 +16,18 @@
 -->
 <resources>
 
-    <string name="app_name">Wikimedia Point Cloud</string>
+    <string name="app_name">Enhanced Point Cloud</string>
     <string name="menu_name">WikiPointCloud</string>
     <string name="vertex_count">Number of points:</string>
     <string name="serviceversion">Tango service version:</string>
-    <string name="appversion">"App version: "</string>
-    <string name="tangoevent">"System event: "</string>
+    <string name="appversion">App version: </string>
+    <string name="tangoevent">System event: </string>
     <string name="start2device">Target->Device, Base->Start: </string>
-    <string name="posecount">", count: "</string>
-    <string name="status">"status: "</string>
-    <string name="deltatime">", delta time (ms): "</string>
-    <string name="pose">", position (m): "</string>
-    <string name="quat">", quat: "</string>
+    <string name="posecount">, count: </string>
+    <string name="status">status: </string>
+    <string name="deltatime">, delta time (ms): </string>
+    <string name="pose">, position (m): </string>
+    <string name="quat">, quat: </string>
     <string name="first_person">First-person</string>
     <string name="third_person">Third-person</string>
     <string name="top_down">Top</string>
@@ -36,20 +36,20 @@
     <string name="realtime">Realtime</string>
     <string name="autoreseton">Auto Reset On</string>
     <string name="autoresetoff">Auto Reset Off</string>
-    <string name="averageZ">"Average depth (m): "</string>
-    <string name="pointCount">"Point count: "</string>
-    <string name="frameDelta">"Frame delta time (ms): "</string>
-    <string name="TangoError">"Tango Exception"</string>
-    <string name="TangoOutOfDateException">"Tango Service outdated!"</string>
-    <string name="motiontrackingpermission">"Motion Tracking permission needed!"</string>
-    <string name="NA">"N/A"</string>
-    <string name="pose_initializing">"initializing"</string>
-    <string name="pose_valid">"valid"</string>
-    <string name="pose_invalid">"invalid"</string>
-    <string name="pose_unknown">"unknown"</string>
-    <string name="latest_adf_is">", Latest ADF is: "</string>
-    <string name="save_data">"Save data"</string>
-    <string name="saving_data">"Saving data..."</string>
-    <string name="save_success">"Saved successfully: "</string>
+    <string name="averageZ">Average depth (m): </string>
+    <string name="pointCount">Point count: </string>
+    <string name="frameDelta">Frame delta time (ms): </string>
+    <string name="TangoError">Tango Exception</string>
+    <string name="TangoOutOfDateException">Tango Service outdated!</string>
+    <string name="motiontrackingpermission">Motion Tracking permission needed!</string>
+    <string name="NA">N/A</string>
+    <string name="pose_initializing">initializing</string>
+    <string name="pose_valid">valid</string>
+    <string name="pose_invalid">invalid</string>
+    <string name="pose_unknown">unknown</string>
+    <string name="latest_adf_is">, Latest ADF is: </string>
+    <string name="save_data">Save data</string>
+    <string name="saving_data">Saving data…</string>
+    <string name="save_success">Saved successfully: </string>
 
 </resources>

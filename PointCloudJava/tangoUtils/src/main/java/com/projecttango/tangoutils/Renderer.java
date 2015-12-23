@@ -22,8 +22,6 @@ public class Renderer {
     private int viewId = 2;
     protected float[] mViewMatrix = new float[MATRIX_4X4];
     protected float[] mCameraPosition;
-    protected float[] mLookAtPosition;
-    protected float[] mCameraUpVector;
     private float[] mDevicePosition;
     private float mCameraOrbitRadius;
     private float mRotationX;
@@ -32,8 +30,7 @@ public class Renderer {
     private float mPreviousRotationY;
     private float mPreviousTouchX;
     private float mPreviousTouchY;
-    private float mTouch1X, mTouch2X, mTouch1Y, mTouch2Y, mTouchStartDistance,
-            mTouchMoveDistance, mStartCameraRadius;
+    private float mTouchStartDistance, mStartCameraRadius;
 
     public Renderer() {
         mModelMatCalculator = new ModelMatCalculator();
@@ -93,6 +90,8 @@ public class Renderer {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
+        float mTouch1X, mTouch2X, mTouch1Y, mTouch2Y, mTouchMoveDistance;
+
         if (viewId == THIRD_PERSON) {
             int pointCount = event.getPointerCount();
             if (pointCount == 1) {
