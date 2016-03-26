@@ -35,7 +35,6 @@
 
     <style name="MyToolbar" parent="@style/Widget.AppCompat.Toolbar">
         <item name="android:background">@color/toolbar_color</item>
-        <item name="android:navigationIcon">?attr/homeAsUpIndicator</item>
         <item name="navigationIcon">?attr/homeAsUpIndicator</item>
     </style>
 
